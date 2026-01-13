@@ -1,4 +1,5 @@
 import { loginUser } from "@/src/api/auth.api";
+import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -10,6 +11,7 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const loginMutation = useMutation({
     mutationFn: () => loginUser(email, password),
@@ -34,14 +36,27 @@ export default function Login() {
         style={styles.inputStyle}
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        placeholderTextColor={"gray"}
       />
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        style={styles.inputStyle}
-        value={password}
-        onChangeText={setPassword}
-      />
+      <View style={styles.passwordWrapper}>
+        <TextInput
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          style={[styles.inputStyle, { flex: 1, marginBottom: 0 }]}
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor={"gray"}
+        />
+
+        <Pressable onPress={() => setShowPassword((p) => !p)}>
+          <Ionicons
+            name={showPassword ? "eye-off-outline" : "eye-outline"}
+            size={22}
+            color="#666"
+          />
+        </Pressable>
+      </View>
 
       <Pressable style={{ alignSelf: "flex-end", marginBottom: 24 }}>
         <Text style={{ color: "#666" }}>Forgot Password?</Text>
@@ -106,6 +121,13 @@ const styles = StyleSheet.create({
   inputStyle: {
     borderBottomWidth: 1,
     borderColor: "#DDD",
+    paddingVertical: 12,
+    marginBottom: 24,
+    color: "#000",
+  },
+  passwordWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     marginBottom: 24,
   },

@@ -20,6 +20,7 @@ export default function RootLayout() {
           name="order/orders"
           options={{
             title: "Past orders",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />
@@ -27,6 +28,7 @@ export default function RootLayout() {
           name="order/[id]"
           options={{
             title: "Order",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />
@@ -34,6 +36,7 @@ export default function RootLayout() {
           name="checkout"
           options={{
             title: "Checkout",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />
@@ -41,6 +44,7 @@ export default function RootLayout() {
           name="address/index"
           options={{
             title: "All addresses",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />
@@ -48,6 +52,7 @@ export default function RootLayout() {
           name="address/add"
           options={{
             title: "Add new address",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />
@@ -55,6 +60,7 @@ export default function RootLayout() {
           name="payment"
           options={{
             title: "Payment Method",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />
@@ -63,6 +69,7 @@ export default function RootLayout() {
           name="voucher"
           options={{
             title: "Voucher",
+            headerTitleAlign: "center",
             headerLeft: backButton(router),
           }}
         />

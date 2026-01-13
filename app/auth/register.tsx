@@ -1,10 +1,61 @@
+import { registerUser } from "@/src/api/auth.api";
+import { saveToken } from "@/src/utils/auth.utils";
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Register() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const [form, setForm] = useState({
+    first_name: "",
+    email: "",
+    password: "",
+    confirm: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      registerUser({
+        first_name: form.first_name,
+        email: form.email,
+        password: form.password,
+      }),
+    onSuccess: async (data) => {
+      await saveToken(data.token);
+      router.replace("/(tabs)");
+    },
+    onError: (err: any) => {
+      Alert.alert("Registration failed", err.message || "Try again");
+    },
+  });
+
+  const handleRegister = () => {
+    if (!form.first_name || !form.email || !form.password) {
+      Alert.alert("All fields are required");
+      return;
+    }
+
+    if (form.password !== form.confirm) {
+      Alert.alert("Passwords do not match");
+      return;
+    }
+
+    mutation.mutate();
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 24 }}>
@@ -12,14 +63,56 @@ export default function Register() {
         Create{"\n"}your account
       </Text>
 
-      <TextInput placeholder="Enter your name" style={styles.inputStyle} />
-      <TextInput placeholder="Email address" style={styles.inputStyle} />
-      <TextInput placeholder="Password" secureTextEntry style={styles.inputStyle} />
-      <TextInput placeholder="Confirm password" secureTextEntry style={styles.inputStyle} />
+      <TextInput
+        placeholder="Enter your name"
+        style={styles.inputStyle}
+        placeholderTextColor={"gray"}
+        onChangeText={(v) => setForm((p) => ({ ...p, first_name: v }))}
+      />
+      <TextInput
+        placeholder="Email address"
+        style={styles.inputStyle}
+        onChangeText={(v) => setForm((p) => ({ ...p, email: v }))}
+        autoCapitalize="none"
+        placeholderTextColor={"gray"}
+      />
+      <View style={styles.passwordWrapper}>
+        <TextInput
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          style={[styles.inputStyle, { flex: 1, marginBottom: 0 }]}
+          value={form.password}
+          onChangeText={(v) => setForm((p) => ({ ...p, password: v }))}
+          placeholderTextColor="gray"
+        />
 
-      <Pressable style={styles.buttonStyle}>
-        <Text style={{ color: "#fff", fontWeight: "700" }}>SIGN UP</Text>
-      </Pressable>
+        <Pressable onPress={() => setShowPassword((p) => !p)}>
+          <Ionicons
+            name={showPassword ? "eye-off-outline" : "eye-outline"}
+            size={22}
+            color="#666"
+          />
+        </Pressable>
+      </View>
+      <View style={styles.passwordWrapper}>
+        <TextInput
+          placeholder="Confirm password"
+          secureTextEntry={!showConfirm}
+          style={[styles.inputStyle, { flex: 1, marginBottom: 0 }]}
+          value={form.confirm}
+          onChangeText={(v) => setForm((p) => ({ ...p, confirm: v }))}
+          placeholderTextColor="gray"
+        />
+
+        <Pressable onPress={() => setShowConfirm((p) => !p)}>
+          <Ionicons name={showConfirm ? "eye-off-outline" : "eye-outline"} size={22} color="#666" />
+        </Pressable>
+      </View>
+      <TouchableOpacity style={styles.buttonStyle} onPress={handleRegister}>
+        <Text style={{ color: "#fff", fontWeight: "700" }}>
+          {mutation.isPending ? "CREATING..." : "SIGN UP"}
+        </Text>
+      </TouchableOpacity>
 
       <Text style={{ textAlign: "center", marginVertical: 20 }}>or sign up with</Text>
 
@@ -29,11 +122,11 @@ export default function Register() {
         <SocialCircle label="f" />
       </View>
 
-      <Pressable onPress={() => router.replace("/auth/login")} style={{ marginTop: 40 }}>
+      <TouchableOpacity onPress={() => router.replace("/auth/login")} style={{ marginTop: 40 }}>
         <Text style={{ textAlign: "center" }}>
           Already have an account? <Text style={{ fontWeight: "700" }}>Log In</Text>
         </Text>
-      </Pressable>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -60,8 +153,14 @@ const styles = StyleSheet.create({
     borderColor: "#DDD",
     paddingVertical: 12,
     marginBottom: 24,
+    color: "black",
   },
-
+  passwordWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    marginBottom: 24,
+  },
   buttonStyle: {
     backgroundColor: "#1E1E1E",
     paddingVertical: 16,

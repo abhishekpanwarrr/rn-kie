@@ -5,8 +5,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LinearGradient from "react-native-linear-gradient";
 
 export default function Profile() {
   const router = useRouter();
@@ -14,23 +15,6 @@ export default function Profile() {
     queryKey: ["me"],
     queryFn: getMe,
   });
-
-  if (isLoading) {
-    return (
-      <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
-        <ActivityIndicator />
-      </SafeAreaView>
-    );
-  }
-
-  if (!user) {
-    return (
-      <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
-        <Text>Failed to load profile</Text>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* Header */}
@@ -47,15 +31,39 @@ export default function Profile() {
         >
           <Ionicons name="person" size={32} color="#111" />
         </View>
-
-        <View style={{ marginLeft: 16, flex: 1 }}>
-          <Text style={{ fontSize: 20, fontWeight: "700" }}>
-            {user.first_name ?? "User"} {user.last_name ?? ""}
-          </Text>
-          <Text style={{ color: "#666", marginTop: 4 }}>{user.email}</Text>
-        </View>
-
-        <Ionicons name="settings-outline" size={22} />
+        {isLoading ? (
+          <ActivityIndicator
+            style={{
+              marginLeft: 40,
+            }}
+          />
+        ) : user ? (
+          <>
+            <View style={{ marginLeft: 16, flex: 1 }}>
+              <Text style={{ fontSize: 20, fontWeight: "700" }}>
+                {user?.first_name ?? ""} {user?.last_name ?? ""}
+              </Text>
+              <Text style={{ color: "#666", marginTop: 4 }}>{user?.email}</Text>
+            </View>
+            <Ionicons name="settings-outline" size={22} />
+          </>
+        ) : (
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.push("/auth/login")}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={["#4c669f", "#3b5998", "#192f6a"]}
+              style={styles.gradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Ionicons name="log-in-outline" size={20} color="white" style={styles.loginIcon} />
+              <Text style={styles.loginText}>Sign In</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Card */}
@@ -121,3 +129,32 @@ export default function Profile() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  loginButton: {
+    borderRadius: 12,
+    overflow: "hidden",
+    marginHorizontal: 20,
+    shadowColor: "#3b5998",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  gradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+  },
+  loginText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+  },
+  loginIcon: {
+    marginRight: 8,
+  },
+});
