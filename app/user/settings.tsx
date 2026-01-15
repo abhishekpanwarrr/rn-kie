@@ -1,4 +1,3 @@
-// import { logout } from "@/src/utils/auth";
 import ProfileRow from "@/components/profile/ProfileRow";
 import { logout } from "@/src/utils/auth.utils";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,10 +5,13 @@ import { useRouter } from "expo-router";
 import { useTheme } from "@/src/theme/ThemeProvider";
 import { Alert, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as SecureStore from "expo-secure-store";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Settings() {
   const { colors, theme, setTheme } = useTheme();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -18,6 +20,8 @@ export default function Settings() {
         text: "Logout",
         style: "destructive",
         onPress: async () => {
+          await SecureStore.deleteItemAsync("token");
+          queryClient.clear();
           await logout();
           router.replace("/auth/login");
         },

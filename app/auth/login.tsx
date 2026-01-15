@@ -4,7 +4,16 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
@@ -58,9 +67,12 @@ export default function Login() {
         </Pressable>
       </View>
 
-      <Pressable style={{ alignSelf: "flex-end", marginBottom: 24 }}>
+      <TouchableOpacity
+        style={{ alignSelf: "flex-end", marginBottom: 24 }}
+        onPress={() => router.push("/auth/forgot-password")}
+      >
         <Text style={{ color: "#666" }}>Forgot Password?</Text>
-      </Pressable>
+      </TouchableOpacity>
 
       <Pressable
         style={styles.buttonStyle}
@@ -74,7 +86,7 @@ export default function Login() {
       >
         <Text style={{ color: "#fff", fontWeight: "700" }}>
           {" "}
-          {loginMutation.isPending ? "Logging in..." : "LOG IN"}
+          {loginMutation.isPending ? <ActivityIndicator size={"small"} /> : "LOG IN"}
         </Text>
       </Pressable>
 

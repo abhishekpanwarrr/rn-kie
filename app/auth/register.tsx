@@ -1,10 +1,10 @@
 import { registerUser } from "@/src/api/auth.api";
-import { saveToken } from "@/src/utils/auth.utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Pressable,
   StyleSheet,
@@ -22,6 +22,7 @@ export default function Register() {
 
   const [form, setForm] = useState({
     first_name: "",
+    last_name: "",
     email: "",
     password: "",
     confirm: "",
@@ -31,12 +32,13 @@ export default function Register() {
     mutationFn: () =>
       registerUser({
         first_name: form.first_name,
+        last_name: form.last_name,
         email: form.email,
         password: form.password,
       }),
     onSuccess: async (data) => {
-      await saveToken(data.token);
-      router.replace("/(tabs)");
+      Alert.alert("Account created", "Please log in to continue");
+      router.replace("/auth/login");
     },
     onError: (err: any) => {
       Alert.alert("Registration failed", err.message || "Try again");
@@ -64,10 +66,16 @@ export default function Register() {
       </Text>
 
       <TextInput
-        placeholder="Enter your name"
+        placeholder="Enter first name"
         style={styles.inputStyle}
         placeholderTextColor={"gray"}
         onChangeText={(v) => setForm((p) => ({ ...p, first_name: v }))}
+      />
+      <TextInput
+        placeholder="Enter last name"
+        style={styles.inputStyle}
+        placeholderTextColor={"gray"}
+        onChangeText={(v) => setForm((p) => ({ ...p, last_name: v }))}
       />
       <TextInput
         placeholder="Email address"
@@ -110,7 +118,7 @@ export default function Register() {
       </View>
       <TouchableOpacity style={styles.buttonStyle} onPress={handleRegister}>
         <Text style={{ color: "#fff", fontWeight: "700" }}>
-          {mutation.isPending ? "CREATING..." : "SIGN UP"}
+          {mutation.isPending ? <ActivityIndicator size={"small"} /> : "SIGN UP"}
         </Text>
       </TouchableOpacity>
 

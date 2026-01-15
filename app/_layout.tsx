@@ -31,6 +31,14 @@ export default function RootLayout() {
               headerLeft: backButton(router),
             }}
           />
+          <Stack.Screen
+            name="auth/forgot-password"
+            options={{
+              title: "",
+              headerShown: true,
+              headerLeft: backButton(router),
+            }}
+          />
           <Stack.Screen name="order/success" />
           <Stack.Screen
             name="order/orders"
