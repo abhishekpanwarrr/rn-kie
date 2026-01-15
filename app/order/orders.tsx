@@ -1,8 +1,16 @@
 import ProfileRow from "@/components/profile/ProfileRow";
 import { getMyOrders } from "@/src/api/order.api";
+import { formatDateTime } from "@/src/utils/date";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Orders() {
@@ -12,6 +20,7 @@ export default function Orders() {
     queryKey: ["orders"],
     queryFn: getMyOrders,
   });
+  console.log("🚀 ~ Orders ~ data:", data);
 
   if (isLoading) {
     return (
@@ -55,18 +64,20 @@ export default function Orders() {
             >
               <Text style={{ fontWeight: "700" }}>Order #{item.order_number}</Text>
 
-              <Text style={{ marginTop: 4, color: "#666" }}>{item.item_count} items</Text>
+              <Text style={{ marginTop: 4, color: "#666" }}>{item?.items?.length} items</Text>
 
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  marginTop: 8,
+                  marginVertical: 8,
                 }}
               >
                 <Text style={{ fontWeight: "600" }}>₹{item.total}</Text>
-                <Text style={{ color: "#666" }}>{item.status}</Text>
+                <Text style={{ color: "#666", textTransform: "capitalize" }}>{item.status}</Text>
               </View>
+
+              <Text style={styles.dateTime}>{formatDateTime(item?.created_at)}</Text>
             </TouchableOpacity>
           )}
         />
@@ -74,3 +85,13 @@ export default function Orders() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  dateTime: {
+    color: "#85a9f8",
+    paddingTop: 4,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: "#ddd",
+    alignSelf: "flex-end",
+  },
+});

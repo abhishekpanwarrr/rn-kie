@@ -1,4 +1,5 @@
 import { cancelOrder, getOrderById } from "@/src/api/order.api";
+import { formatDateTime } from "@/src/utils/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { CheckCircle, CreditCard, MapPin, Package } from "lucide-react-native";
@@ -87,8 +88,8 @@ export default function OrderDetails() {
           )}
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Order Date</Text>
-            <Text style={styles.infoValue}>{new Date(data.created_at).toLocaleDateString()}</Text>
+            <Text style={styles.infoLabel}>Order Date & Time</Text>
+            <Text style={styles.infoValue}>{formatDateTime(data?.created_at)}</Text>
           </View>
         </View>
 

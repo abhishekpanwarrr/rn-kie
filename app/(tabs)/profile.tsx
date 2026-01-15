@@ -1,14 +1,11 @@
 import ProfileRow from "@/components/profile/ProfileRow";
 import { getMe } from "@/src/api/user.api";
-import { logout } from "@/src/utils/auth.utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import LinearGradient from "react-native-linear-gradient";
-
 export default function Profile() {
   const router = useRouter();
   const { data: user, isLoading } = useQuery({
@@ -45,7 +42,9 @@ export default function Profile() {
               </Text>
               <Text style={{ color: "#666", marginTop: 4 }}>{user?.email}</Text>
             </View>
-            <Ionicons name="settings-outline" size={22} />
+            <TouchableOpacity onPress={() => router.push("/user/settings")}>
+              <Ionicons name="settings-outline" size={22} />
+            </TouchableOpacity>
           </>
         ) : (
           <TouchableOpacity
@@ -53,15 +52,8 @@ export default function Profile() {
             onPress={() => router.push("/auth/login")}
             activeOpacity={0.8}
           >
-            <LinearGradient
-              colors={["#4c669f", "#3b5998", "#192f6a"]}
-              style={styles.gradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Ionicons name="log-in-outline" size={20} color="white" style={styles.loginIcon} />
-              <Text style={styles.loginText}>Sign In</Text>
-            </LinearGradient>
+            <Ionicons name="log-in-outline" size={20} color="white" style={styles.loginIcon} />
+            <Text style={styles.loginText}>Sign In</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -116,15 +108,6 @@ export default function Profile() {
             alert("Thanks for your support ❤️");
           }}
         />
-        <ProfileRow
-          icon="log-out-outline"
-          label="Log out"
-          danger
-          onPress={async () => {
-            await logout();
-            router.replace("/auth/login");
-          }}
-        />
       </View>
     </SafeAreaView>
   );
@@ -135,18 +118,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     marginHorizontal: 20,
-    shadowColor: "#3b5998",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  gradient: {
-    flexDirection: "row",
+    backgroundColor: "#000",
+    width: 120,
     alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 28,
-    paddingVertical: 14,
+    flexDirection: "row",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
   loginText: {
     color: "white",
